@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "json.h"
+#include "promise.h"
 
 namespace dj {
 
@@ -34,8 +35,11 @@ namespace dj {
        thread. */
     io_transactor_t();
 
-    /* TODO */
-    virtual bool on_msg(json_t &msg, json_t &reply) = 0;
+    /* Override to handle a request and return a response. */
+    virtual json_t on_request(json_t &request) = 0;
+
+    /* Send a request to our peer and get JSON in the future. */
+    future_t send(json_t &&request);
 
     /* Start the background thread.  Call this in your final constructor. */
     void start();
@@ -45,8 +49,19 @@ namespace dj {
 
     private:
 
+    /* The operations we can find in messages. */
+    enum class op_t { request, response, stop };
+
     /* Transacts JSON messages on standard in/out. */
     void bg_main();
+
+    /* Try to parse a JSON message consisting of an op, id, and body.
+       Return success/failure. */
+    static bool try_parse_msg(
+        json_t &msg, op_t &op, int &id, json_t &body);
+
+    /* Makes and keeps promises for us. */
+    promise_t::keeper_t promise_keeper;
 
     /* Used by stop() to tell the background that the foreground wishes to
        stop. */
@@ -55,7 +70,7 @@ namespace dj {
     /* The thread which enters at bg_main(). */
     std::thread bg_thread;
 
-    /* Covers ex_ptr and exited. */
+    /* Covers ex_ptr, exited, next_id. */
     std::mutex mutex;
 
     /* The exception thrown by the background, if any. */

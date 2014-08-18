@@ -1,3 +1,6 @@
+
+// g++ -std=c++11 -odj io_transactor.cc json.cc dj.cc -Wl,--no-as-needed -lpthread
+
 #include <iostream>
 
 #include "io_transactor.h"
@@ -19,12 +22,8 @@ class foo_t final
 
   private:
 
-  virtual bool on_msg(json_t &msg, json_t &reply) override {
-    if (msg["cmd"] == "exit") {
-      return false;
-    }
-    reply = msg;
-    return true;
+  virtual json_t on_request(json_t &request) override {
+    return request;
   }
 
 };
@@ -35,6 +34,5 @@ int main(int, char *[]) {
     if (foo.has_exited()) {
       break;
     }
-    handle_ui();
   }
 }
