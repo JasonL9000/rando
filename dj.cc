@@ -1,4 +1,3 @@
-
 // g++ -std=c++11 -odj io_transactor.cc json.cc dj.cc -Wl,--no-as-needed -lpthread
 
 #include <iostream>

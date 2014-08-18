@@ -161,7 +161,7 @@ namespace dj {
       /* Write a character to the stream, or write EOF. */
       static void write_char(std::ostream &strm, int c);
 
-    };  // json_t::syntax_error
+    };  // json_t::syntax_error_t
 
     /* Thrown by read() when we find mangled JSON. */
     class bad_escape_t final
@@ -172,7 +172,18 @@ namespace dj {
       bad_escape_t()
           : read_error_t("bad escape") {}
 
-    };  // json_t::bad_escape
+    };  // json_t::bad_escape_t
+
+    /* Thrown by read() when we find mangled JSON. */
+    class nothing_to_read_t final
+        : public read_error_t {
+      public:
+
+      /* We found a bad escape sequence. */
+      nothing_to_read_t()
+          : read_error_t("nothing to read") {}
+
+    };  // json_t::nothing_to_read_t
 
     /* Construct as a default instance of the given kind. */
     json_t(kind_t kind = null) noexcept {

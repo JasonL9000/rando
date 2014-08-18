@@ -99,6 +99,9 @@ void json_t::read(istream &strm) {
       break;
     }
     default: {
+      if (c < 0) {
+        throw nothing_to_read_t();
+      }
       if (c == '+' || c == '-' || isdigit(c)) {
         number_t temp;
         strm >> temp;

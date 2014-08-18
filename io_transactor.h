@@ -6,7 +6,7 @@
 #include <exception>
 #include <thread>
 
-#include <poll.h>
+#include <signal.h>
 #include <unistd.h>
 
 #include "json.h"
@@ -60,12 +60,14 @@ namespace dj {
     static bool try_parse_msg(
         json_t &msg, op_t &op, int &id, json_t &body);
 
+    /* Write a JSON message which can be aprsed by try_parse_msg(). */
+    static void write_msg(op_t op, int id, json_t &&body);
+
+    /* Old signal handler. */
+    struct sigaction old_act;
+
     /* Makes and keeps promises for us. */
     promise_t::keeper_t promise_keeper;
-
-    /* Used by stop() to tell the background that the foreground wishes to
-       stop. */
-    int fds[2];
 
     /* The thread which enters at bg_main(). */
     std::thread bg_thread;
